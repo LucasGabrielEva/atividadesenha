@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureAccess - Autenticação</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #deff9a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+            --border-color: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Urbanist', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 80% 20%, rgba(222, 255, 154, 0.05), transparent 40%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand h1 span {
+            color: var(--accent-color);
+        }
+
+        .brand p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Abas (Tabs) */
+        .tabs {
+            display: flex;
+            background-color: var(--input-bg);
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Formulários */
+        .form-panel {
+            display: none;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(222, 255, 154, 0.1);
+        }
+
+        /* Regras de Senha */
+        .password-rules {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .password-rules ul {
+            list-style: none;
+            margin-top: 6px;
+        }
+
+        .password-rules li {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .password-rules li i {
+            font-size: 10px;
+        }
+
+        /* Botão Principal */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Alertas de Feedback */
+        .alert {
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="brand">
+        <h1>Secure<span>Access</span></h1>
+        <p>Módulo Corporativo de Autenticação</p>
+    </div>
+
+    <!-- Abas para alternar entre Login e Cadastro -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('login-panel')">Login</button>
+        <button class="tab-btn" onclick="switchTab('cadastro-panel')">Cadastro</button>
+    </div>
+
+    <!-- Container de Mensagens Globais -->
+    <div id="alert-error" class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="error-msg">Erro</span>
+    </div>
+    <div id="alert-success" class="alert alert-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="success-msg">Sucesso</span>
+    </div>
+
+    <!-- FORMULÁRIO DE LOGIN (RF04) -->
+    <div id="login-panel" class="form-panel active">
+        <form id="form-login" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="login-username">Login de Usuário</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="login-username" placeholder="Digite seu login corporativo" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="login-password">Senha</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Digite sua senha" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Acessar Sistema</button>
+        </form>
+    </div>
+
+    <!-- FORMULÁRIO DE CADASTRO (RF01) -->
+    <div id="cadastro-panel" class="form-panel">
+        <form id="form-cadastro" onsubmit="handleCadastro(event)">
+            <div class="form-group">
+                <label for="cad-nome">Nome Completo</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" id="cad-nome" placeholder="Ex: João Silva" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cad-login">Login de Acesso</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-at"></i>
+                    <input type="text" id="cad-login" placeholder="Ex: joao.silva" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cad-email">E-mail Corporativo</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="cad-email" placeholder="Ex: joao@empresa.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cad-tipo">Nível de Acesso (RF07)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <select id="cad-tipo" required>
+                        <option value="" disabled selected>Selecione um nível</option>
+                        <option value="CLIENTE">Cliente</option>
+                        <option value="GERENTE">Gerente</option>
+                        <option value="ADMIN">Administrador</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cad-senha">Senha de Segurança</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" id="cad-senha" placeholder="Crie uma senha forte" required>
+                </div>
+            </div>
+
+            <!-- Informativo de Regras de Senha (RF02) -->
+            <div class="password-rules">
+                <strong>Critérios obrigatórios da senha:</strong>
+                <ul>
+                    <li><i class="fa-solid fa-circle-info"></i> Entre 10 e 12 caracteres de comprimento</li>
+                    <li><i class="fa-solid fa-circle-info"></i> Deve conter pelo menos uma letra</li>
+                    <li><i class="fa-solid fa-circle-info"></i> Deve conter pelo menos um número</li>
+                    <li><i class="fa-solid fa-circle-info"></i> Deve conter um caractere especial (!@#$%&*())</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="btn-submit">Finalizar Cadastro</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8080/usuarios';
+
+    // Alternar abas
+    function switchTab(panelId) {
+        hideAlerts();
+        document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+        document.getElementById(panelId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function hideAlerts() {
+        document.getElementById('alert-error').style.display = 'none';
+        document.getElementById('alert-success').style.display = 'none';
+    }
+
+    function showAlert(type, message) {
+        hideAlerts();
+        const alertId = type === 'success' ? 'alert-success' : 'alert-error';
+        const msgId = type === 'success' ? 'success-msg' : 'error-msg';
+
+        document.getElementById(msgId).innerText = message;
+        document.getElementById(alertId).style.display = 'flex';
+    }
+
+    // Processar Cadastro via API (RF01)
+    async function handleCadastro(event) {
+        event.preventDefault();
+        hideAlerts();
+
+        const payload = {
+            nome: document.getElementById('cad-nome').value,
+            login: document.getElementById('cad-login').value,
+            email: document.getElementById('cad-email').value,
+            tipo: document.getElementById('cad-tipo').value,
+            senha: document.getElementById('cad-senha').value
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/cadastrar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.text();
+
+            if (response.status === 201) {
+                showAlert('success', 'Usuário cadastrado com sucesso! Mude para a aba de Login.');
+                document.getElementById('form-cadastro').reset();
+            } else {
+                // Captura o erro disparado pelo Service (Ex: regra de senha)
+                showAlert('error', data || 'Erro ao realizar cadastro.');
+            }
+        } catch (error) {
+            showAlert('error', 'Não foi possível conectar ao servidor Spring Boot.');
+        }
+    }
+
+    // Processar Login via API (RF04 / RF06)
+    async function handleLogin(event) {
+        event.preventDefault();
+        hideAlerts();
+
+        const loginVal = document.getElementById('login-username').value;
+        const senhaVal = document.getElementById('login-password').value;
+
+        try {
+            // Enviando como RequestParam conforme construído no Controller
+            const response = await fetch(`${API_BASE_URL}/login?login=${encodeURIComponent(loginVal)}&senha=${encodeURIComponent(senhaVal)}`, {
+                method: 'POST'
+            });
+
+            const data = await response.text();
+
+            if (response.ok) {
+                const userObj = JSON.parse(data);
+                showAlert('success', `Bem-vindo, ${userObj.nome}! Autenticação realizada.`);
+            } else {
+                // Captura mensagens como "Senha inválida", "Usuário inexistente" ou "Conta bloqueada..."
+                showAlert('error', data || 'Falha na autenticação.');
+            }
+        } catch (error) {
+            showAlert('error', 'Não foi possível conectar ao servidor Spring Boot.');
+        }
+    }
+</script>
+
+</body>
+</html>
